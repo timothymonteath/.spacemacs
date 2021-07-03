@@ -215,7 +215,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(misterioso
+   dotspacemacs-themes '(doom-city-lights
+                         misterioso
                          afternoon
                          heroku
                          gotham
@@ -238,7 +239,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
 
    ;; Default font or prioritized list of fonts.
-   dotspacemacs-default-font '("Fira Code"
+   dotspacemacs-default-font '("Roboto Mono"
                                :size 14.0
                                :weight normal
                                :width normal)
@@ -700,8 +701,8 @@ before packages are loaded."
 
   ;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;
 
+  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
 
-  (evil-define-key 'insert python-mode (kbd "C-;") 'python-shell-send-region)
   (spacemacs/set-leader-keys "op" 'python-shell-send-region)
 
 
@@ -743,4 +744,9 @@ before packages are loaded."
 
   (spacemacs/set-leader-keys "oe" 'helm-evil-markers)
 
+  ;; toggle comments mode
+
+  (spacemacs/set-leader-keys "oc" 'comment-or-uncomment-region)
+
   )
+
