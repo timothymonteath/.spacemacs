@@ -46,7 +46,29 @@ This function should only modify configuration layer settings."
      lsp
      markdown
      ;; multiple-cursors
-     org
+     (org
+      :variables
+      org-directory (expand-file-name "~/Dropbox/Org")
+      org-default-notes-file (concat org-directory "/inbox.org")
+      ;; org-roam
+      org-enable-roam-support t
+      org-roam-directory (concat org-directory "/roam")
+      org-roam-db-location (concat org-roam-directory "/db/org-roam.db")
+      :config 
+      (setq org-capture-template
+            '(("d" "default" plain (function org-roam--capture-get-point)
+               "%?"
+               :file-name "${slug}"
+               :head "#+title: ${title}\n#+CREATED: %U\n#+LAST_MODIFIED: %U\n\n"
+               :unnarrowed t)))
+      )
+     (bibtex
+      :variables
+      bibtex-completion-bibliography (expand-file-name "~/Dropbox/Org/bib.bib")
+      bibtex-completion-pdf-field "file"
+      ;; org-ref stuff (but used by bibtex layer)
+      org-ref-default-bibliography (list bibtex-completion-bibliography)
+      org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
@@ -90,6 +112,13 @@ This function should only modify configuration layer settings."
                                       goldendict
                                       py-autopep8
                                       helm-evil-markers
+                                      (pdf-continuous-scroll-mode :location (recipe
+                                                                             :fetcher github
+                                                                             :repo "dalanicolai/pdf-continuous-scroll-mode.el"))
+                                      org-roam-bibtex
+                                      org-pdftools
+                                      org-noter
+                                      org-noter-pdftools
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -668,7 +697,48 @@ before packages are loaded."
   ;; instead of the above, using the dash app, linked to emacs
   ;;(global-set-key (kbd "C-§") 'dash-at-point)
 
-  ;;;;;;;;;;;;;;;;;; LaTeX Commands ;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;; Org Roam ;;;;;;;;;;;;;;;;;;;;;;
+
+  (use-package org-roam-bibtex
+    :after org-roam
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :custom
+    (orb-preformat-keywords '("citekey" "title" "url" "author-or-editor" "keywords" "file"))
+    (orb-process-file-keyword t)
+    (orb-file-field-extensions '("pdf" "epub" "html"))
+
+    (orb-templates
+     '(("r" "ref" plain (function org-roam-capture--get-point)
+        ""
+        :file-name "${citekey}"
+        :head "#+TITLE: ${citekey}: ${title}
+#+ROAM_KEY: ${ref}
+
+- tags ::
+- keywords :: ${keywords}
+
+* ${title}
+  :PROPERTIES:
+  :Custom_ID: ${citekey}
+  :URL: ${url}
+  :AUTHOR: ${author-or-editor}
+  :NOTER_DOCUMENT: ${file}
+  :NOTER_PAGE:
+  :END:"))))
+
+  (use-package org-pdftools
+    :hook (org-load . org-pdftools-setup-link))
+
+  (use-package org-noter
+    :after (:any org pdf-view)
+    :custom (org-noter-always-create-frame nil))
+
+  (use-package org-noter-pdftools
+    :after org-noter
+    :config
+    (with-eval-after-load 'pdf-annot
+      (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+
 
   ;; stops the auto line wrap enabled by the spacemacs layer
 
@@ -684,12 +754,12 @@ before packages are loaded."
                                         ; "uncomment then options go here "
                            (buffer-file-name))))
   ;; open local bib file of all zotero entries - updated by better bibtex
-  (setq bibtex-completion-bibliography
-        '("~/Dropbox/Org/bib.bib"))
+  ;; (setq bibtex-completion-bibliography
+  ;;       '("~/Dropbox/Org/bib.bib"))
 
   ;; default to open file rather than doi etc
 
-  (setq bibtex-completion-pdf-field "File")
+  ;; (setq bibtex-completion-pdf-field "File")
 
   ;;;;;;;;;;;;;;;;;;; Deft ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
