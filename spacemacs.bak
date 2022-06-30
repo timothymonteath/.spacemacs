@@ -32,93 +32,66 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(html
+   '(csv
+     python
+     markdown
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     auto-completion
-     better-defaults
+     ;; auto-completion
+     ;; better-defaults
+     (ranger :variables ranger-show-preview t)
      emacs-lisp
-     git
+     (python :variables python-backend 'anaconda)
+     (conda :variables conda-anaconda-home "/Users/twm/opt/anaconda3/")
+     ess
+     ;; git
      helm
-     lsp
-     markdown
-     ;; multiple-cursors
-     (org
-      :variables
-      org-directory (expand-file-name "~/Dropbox/Org")
-      org-default-notes-file (concat org-directory "/inbox.org")
-      ;; org-roam
-      org-enable-roam-support t
-      org-roam-directory (concat org-directory "/roam")
-      org-roam-db-location (concat org-roam-directory "/db/org-roam.db")
-      :config 
-      (setq org-capture-template
-            '(("d" "default" plain (function org-roam--capture-get-point)
-               "%?"
-               :file-name "${slug}"
-               :head "#+title: ${title}\n#+CREATED: %U\n#+LAST_MODIFIED: %U\n\n"
-               :unnarrowed t)))
-      )
+     shell
+     ;; lsp
+     ;; markdown
+     ;;multiple-cursors
+     org
+     osx
+     ;; (shell :variables
+     ;;        shell-default-height 30
+     ;;        shell-default-position 'bottom)
+     spell-checking
+     ;; syntax-checking
+     ;; version-control
      (bibtex
       :variables
-      bibtex-completion-bibliography (expand-file-name "~/Dropbox/Org/bib.bib")
+      bibtex-completion-bibliography (expand-file-name "~/Dropbox/00 - 09 - Meta/00 - Meta/bib.bib")
       bibtex-completion-pdf-field "file"
       ;; org-ref stuff (but used by bibtex layer)
       org-ref-default-bibliography (list bibtex-completion-bibliography)
       org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
-      spell-checking
-     ;; syntax-checking
-     ;; treemacs
-     ;; version-control
-     ;;
-     ;; my additions
-     spell-checking
-     osx
-     themes-megapack
-     (python :variables python-backend 'anaconda)
-     ipython-notebook
-     (conda :variables conda-anaconda-home "/Users/ad/opt/anaconda3/")
-     (latex :variables latex-build-command "XeLaTeX")
-     bibtex
-     (ess :variables ess-r-backend 'lsp)
      pandoc
-     markdown
      pdf
-     deft
-     ;; elfeed and rss file
-     (elfeed :variables rmh-elfeed-org-files (list "~/Dropbox/Org/elfeed.org"))
+     epub
+     treemacs
+     themes-megapack
+     colors
+     theming
+     (elfeed :variables rmh-elfeed-org-files (list "~/Dropbox/00 - 09 - Meta/01 - Configs/01.004 - elfeed.org"))
      )
 
-   ;; List of additional packages that will be installed without being
-   ;; wrapped in a layer. If you need some configuration for these
-   ;; packages, then consider creating a layer. You can also put the
-   ;; configuration in `dotspacemacs/user-config'.
-   ;; To use a local version of a package, use the `:location' property:
-   ;; '(your-package :location "~/path/to/your-package/")
+
+   ;; List of additional packages that will be installed without being wrapped
+   ;; in a layer (generally the packages are installed only and should still be
+   ;; loaded using load/require/use-package in the user-config section below in
+   ;; this file). If you need some configuration for these packages, then
+   ;; consider creating a layer. You can also put the configuration in
+   ;; `dotspacemacs/user-config'. To use a local version of a package, use the
+   ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(olivetti
-                                      org-fancy-priorities
-                                      org-bullets
-                                      latex-extra
-                                      helm-flyspell
-                                      wordnut
+                                      emacs-everywhere
+                                     ;;helm-evil-markers
+                                      academic-phrases
                                       synosaurus
-                                      goldendict
-                                      py-autopep8
-                                      helm-evil-markers
-                                      (pdf-continuous-scroll-mode :location (recipe
-                                                                             :fetcher github
-                                                                             :repo "dalanicolai/pdf-continuous-scroll-mode.el"))
-                                      org-roam-bibtex
-                                      org-pdftools
-                                      org-noter
-                                      org-noter-pdftools
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -159,9 +132,9 @@ It should only modify the values of Spacemacs settings."
    ;; portable dumper in the cache directory under dumps sub-directory.
    ;; To load it when starting Emacs add the parameter `--dump-file'
    ;; when invoking Emacs 27.1 executable on the command line, for instance:
-   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
-   ;; (default spacemacs.pdmp)
-   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+   ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
+   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
+   dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
@@ -181,9 +154,18 @@ It should only modify the values of Spacemacs settings."
    ;; (default '(100000000 0.1))
    dotspacemacs-gc-cons '(100000000 0.1)
 
+   ;; Set `read-process-output-max' when startup finishes.
+   ;; This defines how much data is read from a foreign process.
+   ;; Setting this >= 1 MB should increase performance for lsp servers
+   ;; in emacs 27.
+   ;; (default (* 1024 1024))
+   dotspacemacs-read-process-output-max (* 1024 1024)
+
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
-   ;; latest version of packages from MELPA. (default nil)
+   ;; latest version of packages from MELPA. Spacelpa is currently in
+   ;; experimental state please use only for testing purposes.
+   ;; (default nil)
    dotspacemacs-use-spacelpa nil
 
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
@@ -209,6 +191,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
 
+   ;; If non-nil show the version string in the Spacemacs buffer. It will
+   ;; appear as (spacemacs version)@(emacs version)
+   ;; (default t)
+   dotspacemacs-startup-buffer-show-version t
+
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -220,22 +207,40 @@ It should only modify the values of Spacemacs settings."
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
-   ;; `recents' `bookmarks' `projects' `agenda' `todos'.
+   ;; `recents' `recents-by-project' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 15)
+   ;; The exceptional case is `recents-by-project', where list-type must be a
+   ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
+   ;; number is the project limit and the second the limit on the recent files
+   ;; within a project.
+   dotspacemacs-startup-lists '((recents . 5)
                                 (projects . 7))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
+   ;; Show numbers before the startup list lines. (default t)
+   dotspacemacs-show-startup-list-numbers t
+
+   ;; The minimum delay in seconds between number key presses. (default 0.4)
+   dotspacemacs-startup-buffer-multi-digit-delay 0.4
+
    ;; Default major mode for a new empty buffer. Possible values are mode
-   ;; names such as `ext-mode'; and `nil' to use Fundamental mode.
+   ;; names such as `text-mode'; and `nil' to use Fundamental mode.
    ;; (default `text-mode')
    dotspacemacs-new-empty-buffer-major-mode 'text-mode
 
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
+
+   ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
+   ;; *scratch* buffer will be saved and restored automatically.
+   dotspacemacs-scratch-buffer-persistent nil
+
+   ;; If non-nil, `kill-buffer' on *scratch* buffer
+   ;; will bury it instead of killing.
+   dotspacemacs-scratch-buffer-unkillable nil
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -244,15 +249,10 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-city-lights
-                         misterioso
-                         afternoon
-                         heroku
-                         gotham
-                         ;;spacemacs-dark
-                         ;;spacemacs-light
-                         leuven
-                         )
+   dotspacemacs-themes '(doom-palenight
+                         graham
+                         spacemacs-dark
+                         spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -267,9 +267,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font or prioritized list of fonts.
-   dotspacemacs-default-font '("Roboto Mono"
-                               :size 14.0
+   ;; Default font or prioritized list of fonts. The `:size' can be specified as
+   ;; a non-negative integer (pixel size), or a floating-point (point size).
+   ;; Point size is recommended, because it's device independent. (default 10.0)
+   dotspacemacs-default-font '("Audimat Mono"
+                               :size 18
                                :weight normal
                                :width normal)
 
@@ -292,8 +294,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+   ;; C-M-m also should work in terminal mode, but not in GUI mode.
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -403,12 +407,16 @@ It should only modify the values of Spacemacs settings."
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
 
+   ;; Show the scroll bar while scrolling. The auto hide time can be configured
+   ;; by setting this variable to a number. (default t)
+   dotspacemacs-scroll-bar-while-scrolling t
+
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
    ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
    ;; numbers are relative. If set to `visual', line numbers are also relative,
-   ;; but lines are only visual lines are counted. For example, folded lines
-   ;; will not be counted and wrapped lines are counted as multiple lines.
+   ;; but only visual lines are counted. For example, folded lines will not be
+   ;; counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
    ;;   :visual nil
@@ -423,13 +431,18 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-line-numbers nil
 
-   ;; Code folding method. Possible values are `evil' and `origami'.
+   ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
 
-   ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
+   ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
+   ;; `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+
+   ;; If non-nil smartparens-mode will be enabled in programming modes.
+   ;; (default t)
+   dotspacemacs-activate-smartparens-mode t
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc...
@@ -477,12 +490,18 @@ It should only modify the values of Spacemacs settings."
    ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
+   ;; If nil then Spacemacs uses default `frame-title-format' to avoid
+   ;; performance issues, instead of calculating the frame title by
+   ;; `spacemacs/title-prepare' all the time.
    ;; (default "%I@%S")
    dotspacemacs-frame-title-format "%I@%S"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
+
+   ;; Show trailing whitespace (default t)
+   dotspacemacs-show-trailing-whitespace t
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
    ;; to aggressively delete empty line and long sequences of whitespace,
@@ -491,6 +510,23 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
+   ;; If non-nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfere with mode specific
+   ;; indent handling like has been reported for `go-mode'.
+   ;; If it does deactivate it here.
+   ;; (default t)
+   dotspacemacs-use-clean-aindent-mode t
+
+   ;; Accept SPC as y for prompts if non-nil. (default nil)
+   dotspacemacs-use-SPC-as-y nil
+
+   ;; If non-nil shift your number row to match the entered keyboard layout
+   ;; (only in insert state). Currently supported keyboard layouts are:
+   ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
+   ;; New layouts can be added in `spacemacs-editing' layer.
+   ;; (default nil)
+   dotspacemacs-swap-number-row nil
+
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
    dotspacemacs-zone-out-when-idle nil
@@ -498,7 +534,14 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil))
+   dotspacemacs-pretty-docs nil
+
+   ;; If nil the home buffer shows the full path of agenda items
+   ;; and todos. If non-nil only the file name is shown.
+   dotspacemacs-home-shorten-agenda-source nil
+
+   ;; If non-nil then byte-compile some of Spacemacs files.
+   dotspacemacs-byte-compile nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -506,7 +549,8 @@ This function defines the environment variables for your Emacs session. By
 default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
-  (spacemacs/load-spacemacs-env))
+  (spacemacs/load-spacemacs-env)
+)
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -514,14 +558,16 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  )
+)
+
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-  )
+)
+
 
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
@@ -530,293 +576,94 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  ;;;;;;;;;;;;;; Global Options ;;;;;;;;;;;;;;;;;;;;
+  ;; Global Display Options
 
   (setq scroll-margin 5)
 
-  ;;;;;;;;;;;;;; Global Hotkey settings ;;;;;;;;;;;;
-  ;; Global spelling hotkey
-  (global-set-key (kbd "§") 'helm-flyspell-correct)
-
-  (global-set-key (kbd "C-q") 'check-previous-spelling-error)
-  ;; spellcheck all buffers on load
-  (add-hook 'flyspell-mode-hook 'flyspell-buffer)
-
-  (defun flyspell-goto-previous-error (arg)
-  "Go to arg previous spelling error."
-  (interactive "p")
-  (while (not (= 0 arg))
-    (let ((pos (point))
-          (min (point-min)))
-      (if (and (eq (current-buffer) flyspell-old-buffer-error)
-               (eq pos flyspell-old-pos-error))
-          (progn
-            (if (= flyspell-old-pos-error min)
-                ;; goto beginning of buffer
-                (progn
-                  (message "Restarting from end of buffer")
-                  (goto-char (point-max)))
-              (backward-word 1))
-            (setq pos (point))))
-      ;; seek the next error
-      (while (and (> pos min)
-                  (let ((ovs (overlays-at pos))
-                        (r '()))
-                    (while (and (not r) (consp ovs))
-                      (if (flyspell-overlay-p (car ovs))
-                          (setq r t)
-                        (setq ovs (cdr ovs))))
-                    (not r)))
-        (backward-word 1)
-        (setq pos (point)))
-      ;; save the current location for next invocation
-      (setq arg (1- arg))
-      (setq flyspell-old-pos-error pos)
-      (setq flyspell-old-buffer-error (current-buffer))
-      (goto-char pos)
-      (if (= pos min)
-          (progn
-            (message "No more miss-spelled word!")
-            (setq arg 0))))))
-
-  (defun check-previous-spelling-error ()
-    "Jump to previous spelling error and correct it"
-    (interactive)
-    (flyspell-goto-previous-error 1)
-    (call-interactively 'helm-flyspell-correct))
-
-  ;; Evil mode escape
-
-  (setq-default evil-escape-delay 0.2)
-
-  ;; Thesaurus and Dictionary
-
-  (global-set-key (kbd "C-1") 'wordnut-lookup-current-word)
-  (global-set-key (kbd "C-2") 'synosaurus-choose-and-replace)
-  (global-set-key (kbd "C-c 3") 'goldendict-dwim)
-  ;; up/down line with meta
+  ;; Global Hotkeys
 
   (global-set-key (kbd "M-n") 'next-line)
   (global-set-key (kbd "M-p") 'previous-line)
 
-  ;; toggle visual line mode
+  (spacemacs/set-leader-keys "oo" 'olivetti-mode)
 
-  (global-set-key (kbd "C-'") 'visual-line-mode)
-  ;; pound sign also moves to end of line like dollar in evil mode 
-  (define-key evil-insert-state-map (kbd "£") 'end-of-line)
-  ;; set default browser
+  (spacemacs/set-leader-keys "tt" 'toggle-word-wrap)
+
+  ;;(spacemacs/set-leader-keys "oe" 'helm-evil-markers)
+
+  (spacemacs/set-leader-keys "oc" 'comment-or-uncomment-region)
+
+  (spacemacs/set-leader-keys "of" 'helm-bibtex)
+
+  (spacemacs/set-leader-keys "ow" 'latex-word-count)
+
+  (spacemacs/set-leader-keys "op" 'python-shell-send-region)
+
+  (global-set-key (kbd "C-q") 'flyspell-correct-previous)
+
+  (global-set-key (kbd "C-t") 'flyspell-correct-next)
+
+  (spacemacs/set-leader-keys "oi" 'org-insert-structure-template)
+
+  (spacemacs/set-leader-keys "oz" 'spacemacs/helm-shell-history)
+
+  (spacemacs/declare-prefix "oa" "Words and Phrases")
+
+  (spacemacs/set-leader-keys "oaa" 'academic-phrases)
+  (spacemacs/set-leader-keys "oad" 'osx-dictionary-search-word-at-point) ;; it uses whatever is the first dictionary in the apple dictionary app, set this to thesaurus and you can use it as this, changing dict requires emacs restart tho
+  (spacemacs/set-leader-keys "oat" 'synosaurus-choose-and-replace) ;; requires wordnet to be installed
+
+
+  ;; Global loads
+
   ;; sets default browser to a very small bash script that opens firefox with a new background tab
-  (setq-default  browse-url-generic-program "~/Dropbox/Scripts/Utility/firefox.sh"
-                 browse-url-browser-function 'browse-url-generic)
+  ;; (setq-default  browse-url-generic-program "~/Dropbox/00 - 09 - Meta/02 - Scripts/02.001 - firefox.sh"
+  ;;                browse-url-browser-function 'browse-url-generic)
 
+  ;; Emacs everywhere
 
-  ;;;;;;;;;;;;;;;; ORG SETTINGS ;;;;;;;;;;;;;;;;;;;
+  ;; (setq whitespace-line-column nil
+  ;;       whitespace-display-mappings '((space-mark 32 [183] [46])
+  ;;                                     (newline-mark 10 [9166 10])
+  ;;                                     (tab-mark 9 [9654 9] [92 9])))
 
-  ;; Orgmode quoteblocks are closed by default
+  (setq emacs-everywhere-frame-parameters '((width . 80)
+                                            (height . 40)))
 
-  (setq org-hide-block-startup t)
+  (setq emacs-everywhere-set-frame-position '((x . 0)
+                                              (y . 0)))
 
-  ;; Org mode todo states
-  (setq org-todo-keywords '((type "TODO" "IN-PROGRESS" "WAIT" "HOLD" "CANCELED" "|" "DONE")))
+  ;; spellcheck all buffers on load
+  (add-hook 'flyspell-mode-hook 'flyspell-buffer)
 
-  ;; todo state colors, override theme
-  (setq org-todo-keyword-faces
-        '(("TODO" . (:foreground "firebrick" :weight bold))
-          ("IN-PROGRESS" . (:foreground "chartreuse" :weight bold))
-          ("WAIT" . (:foreground "gold" :weight bold))
-          ("HOLD" . (:foreground "dim grey" :weight bold))
-          ("TOREAD" . (:foreground "orange" :weight bold))
-          ("DONE" . (:foreground "green" :weight bold))
-          ("CANCELED" . (:foreground "red" :weight bold :strike-through))
-          ))
+  ;; Functions
 
-  ;; Extending range of org mode priorities
-
-  (setq org-highest-priority ?A)
-  (setq org-default-priority ?D)
-  (setq org-lowest-priority ?H)
-
-  ;; Org mode custom priorities
-  (setq org-fancy-priorities-list '((?A . "!!!")
-                                    (?B . "!!")
-                                    (?C . "!")
-                                    (?D . "HIGH")
-                                    (?E . "MED")
-                                    (?F . "LOW")
-                                    (?G . "OPTIONAL")
-                                    (?H . "IGNORE")
-                                    ))
-
-  ;;set colours for priorities
-  (setq org-priority-faces '((?A . (:foreground "red" :weight bold))
-                             (?B . (:foreground "firebrick" :weight bold))
-                             (?C . (:foreground "tomato" :weight bold))
-                             (?D . (:foreground "dark red" :weight bold))
-                             (?E . (:foreground "dark orange" :weight bold))
-                             (?F . (:foreground "gold" :weight bold))
-                             (?G . (:foreground "chartreuse" :weight bold))
-                             (?H . (:foreground "dim grey" :weight bold))
-                             ))
-
-  ;; Org fancy bullet points
-  (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
-
-  ;; Org agenda custom length
-  (setq org-agenda-span 14
-        org-agenda-start-on-weekday nil
-        org-agenda-start-day "-1d")
-
-  ;; Custom Org Agenda
-  (setq org-agenda-custom-commands
-        '(("c" "Simple agenda view"
-           ((todo "IN-PROGRESS")
-            (agenda "")
-            (todo "TODO")
-            (todo "WAIT")
-           ;; (todo "TOREAD")
-            (todo "HOLD")
-            ))))
-
-  (setq org-agenda-files '("~/Dropbox/Org/"))
-  (setq org-agenda-default-appointment-duration 60)
-
-  ;; Org mode header size
-
-  (custom-set-faces
-   '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
-   '(org-level-2 ((t (:inherit outline-2 :height 1.5))))
-   '(org-level-3 ((t (:inherit outline-3 :height 1.3))))
-   '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
-   '(org-level-5 ((t (:inherit outline-5 :height 1.0))))
-   )
-
-  ;; specifies the browser in which helm-dash docsets will be opened
-  ;; without this line opens in firefox which is defined above as default
-  ;; (setq helm-dash-browser-func 'eww)
-
-  ;; instead of the above, using the dash app, linked to emacs
-  ;;(global-set-key (kbd "C-§") 'dash-at-point)
-
-  ;;;;;;;;;;;;;;;;;; Org Roam ;;;;;;;;;;;;;;;;;;;;;;
-
-  (use-package org-roam-bibtex
-    :after org-roam
-    :hook (org-roam-mode . org-roam-bibtex-mode)
-    :custom
-    (orb-preformat-keywords '("citekey" "title" "url" "author-or-editor" "keywords" "file"))
-    (orb-process-file-keyword t)
-    (orb-file-field-extensions '("pdf" "epub" "html"))
-
-    (orb-templates
-     '(("r" "ref" plain (function org-roam-capture--get-point)
-        ""
-        :file-name "${citekey}"
-        :head "#+TITLE: ${citekey}: ${title}
-#+ROAM_KEY: ${ref}
-
-- tags ::
-- keywords :: ${keywords}
-
-* ${title}
-  :PROPERTIES:
-  :Custom_ID: ${citekey}
-  :URL: ${url}
-  :AUTHOR: ${author-or-editor}
-  :NOTER_DOCUMENT: ${file}
-  :NOTER_PAGE:
-  :END:"))))
-
-  (use-package org-pdftools
-    :hook (org-load . org-pdftools-setup-link))
-
-  (use-package org-noter
-    :after (:any org pdf-view)
-    :custom (org-noter-always-create-frame nil))
-
-  (use-package org-noter-pdftools
-    :after org-noter
-    :config
-    (with-eval-after-load 'pdf-annot
-      (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
-
-
-  ;; stops the auto line wrap enabled by the spacemacs layer
-
-  (add-hook 'LaTeX-mode-hook 'latex-extra-mode)
-
-  ;;(add-hook 'LaTex-mode-hook 'olivetti-mode)
-
-  (setq latex-enable-auto-fill nil)
+  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
 
   (defun latex-word-count ()
     (interactive)
     (shell-command (concat "~/Dropbox/Scripts/Utility/latexcount.pl " ;; the white space is important
                                         ; "uncomment then options go here "
                            (buffer-file-name))))
+
+
   ;; open local bib file of all zotero entries - updated by better bibtex
   ;; (setq bibtex-completion-bibliography
   ;;       '("~/Dropbox/Org/bib.bib"))
 
-  ;; default to open file rather than doi etc
+  ;; Org mode
 
-  ;; (setq bibtex-completion-pdf-field "File")
+  (with-eval-after-load 'evil-org ;; in org mode $ is visual not actual line, this overrides
+    (advice-add 'evil-org-end-of-line :override 'evil-end-of-line))
 
-  ;;;;;;;;;;;;;;;;;;; Deft ;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Mac specific settings
 
-  (setq deft-directory "~/Dropbox/FinGeo")
-
-  (setq deft-extensions '("org" "md" "txt"))
-
-  ;;;;;;;;;;;;;;;;;;; CONDA ;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
-
-  (spacemacs/set-leader-keys "op" 'python-shell-send-region)
-
-
-  ;;;;;;;;;;;;;;; Spacemacs key bindings ;;;;;;;;;;;;
-
-  (spacemacs/declare-prefix "o" "Custom Commands")
-
-  ;; toggle bottom bar
-  (spacemacs/set-leader-keys "tb" 'hidden-mode-line-mode)
-
-  ;; toggle olivetti mode
-
-  (spacemacs/set-leader-keys "oo" 'olivetti-mode)
-
-  ;; latex word count
-
-  (spacemacs/set-leader-keys "ow" 'latex-word-count)
-
-  ;; helm bibtex find
-
-  (spacemacs/set-leader-keys "of" 'helm-bibtex)
-
-  ;; toggle org todo addons
-
-  (defun custom-org-agenda-view ()
-    "Adds fancy visuals and agenda"
-    (interactive)
-    (org-fancy-priorities-mode)
-    (org-bullets-mode)
-    )
-
-  (spacemacs/set-leader-keys "oa" 'custom-org-agenda-view)
-
-  ;; toggle line and wordwrap
-
-  (spacemacs/set-leader-keys "tt" 'toggle-word-wrap)
-
-  ;; helm-evil-markers mode
-
-  (spacemacs/set-leader-keys "oe" 'helm-evil-markers)
-
-  ;; toggle comments mode
-
-  (spacemacs/set-leader-keys "oc" 'comment-or-uncomment-region)
-
+  (setq frame-resize-pixelwise t)
+  ;; high dpi for pdf
+  (setq pdf-view-use-scaling t)
   )
 
+  ;; Theme specific tweaks
+
+  ;; Load a custom theme
+)
